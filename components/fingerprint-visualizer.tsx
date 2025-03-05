@@ -51,7 +51,8 @@ export default function FingerprintVisualizer() {
       setError(null)
     } catch (error) {
       console.error("Error fetching fingerprints:", error)
-      setError(`Failed to fetch fingerprints: ${(error as Error).message}`)
+      setError(`Connection error: Using in-memory storage. Your fingerprints will be visible but may not persist across all clients.`)
+      // Don't clear fingerprints on error to maintain the last known state
     } finally {
       setIsFetching(false)
     }
@@ -103,9 +104,6 @@ export default function FingerprintVisualizer() {
         const data = await response.json()
         console.log(`Registered fingerprint: ${fingerprint.moniker}. Total: ${data.count} (${data.storageType})`)
         setStorageType(data.storageType || "unknown")
-
-        // Immediately fetch fingerprints after registering
-        fetchFingerprints()
       } catch (error) {
         console.error("Error registering fingerprint:", error)
         setError(`Failed to register fingerprint: ${(error as Error).message}`)
@@ -117,30 +115,33 @@ export default function FingerprintVisualizer() {
     // Register immediately
     registerFingerprint()
 
-    // Register fingerprint every 10 seconds to keep it active
-    const interval = setInterval(registerFingerprint, 10000)
+    // Register fingerprint every 2 minutes to keep it active
+    const interval = setInterval(registerFingerprint, 120000)
 
     return () => clearInterval(interval)
-  }, [fingerprint, loading, fetchFingerprints, isRegistering])
+  }, [fingerprint, loading, isRegistering])
 
   // Fetch all fingerprints periodically
   useEffect(() => {
     if (!fingerprint) return
 
-    // Fetch immediately
-    fetchFingerprints()
+    // Debounce the initial fetch
+    const initialFetchTimeout = setTimeout(fetchFingerprints, 1000)
 
-    // Then fetch every 2 seconds
-    const interval = setInterval(fetchFingerprints, 2000)
+    // Then fetch every 30 seconds
+    const interval = setInterval(fetchFingerprints, 30000)
 
-    return () => clearInterval(interval)
+    return () => {
+      clearTimeout(initialFetchTimeout)
+      clearInterval(interval)
+    }
   }, [fingerprint, fetchFingerprints])
 
   // Fetch debug info periodically
   useEffect(() => {
     if (showDebug) {
       fetchDebugInfo()
-      const interval = setInterval(fetchDebugInfo, 5000)
+      const interval = setInterval(fetchDebugInfo, 30000)
       return () => clearInterval(interval)
     }
   }, [showDebug, fetchDebugInfo])
@@ -201,6 +202,7 @@ export default function FingerprintVisualizer() {
           <div className="text-xs text-slate-400 self-center">
             {lastFetchTime && `Last updated: ${lastFetchTime.toLocaleTimeString()}`}
             {storageType && ` (${storageType})`}
+            {isFetching && <span className="ml-2 text-amber-400 animate-pulse">Updating...</span>}
           </div>
 
           <button
