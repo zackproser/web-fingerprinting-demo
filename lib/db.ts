@@ -53,7 +53,7 @@ export async function addFingerprint(fingerprint: FingerprintData) {
     if (useInMemoryFallback) {
       // Store in memory
       inMemoryStore.set(fingerprint.id, fingerprint)
-      console.log(`Fingerprint registered in memory: ${fingerprint.moniker}`)
+      // console.log(`Fingerprint registered in memory: ${fingerprint.moniker}`)
       return true
     }
 
