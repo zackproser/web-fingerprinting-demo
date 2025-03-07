@@ -130,10 +130,27 @@ export default function FingerprintBlock({ data, index, isOwn = false }: Fingerp
         controls.start({ scale: 1 })
       }}
     >
-      <div className="flex items-center gap-3 mb-2">
-        <div className="text-4xl">{data.emoji}</div>
-        <div>
-          <h3 className="font-bold text-white text-lg flex items-center">
+      {/* Full width mugshot section */}
+      <div className="w-full bg-[#1A1A1A] p-3 rounded-t-lg shadow-inner border border-[#333333] flex items-center justify-center">
+        <div className="text-6xl filter grayscale bg-gradient-to-b from-slate-800 to-slate-900 p-4 rounded border border-[#444444]" style={{ fontFamily: 'serif' }}>
+          {data.emoji}
+        </div>
+      </div>
+
+      {/* Full width ID card */}
+      <div className="w-full bg-white -mt-1 shadow-md">
+        <div className="border-b border-[#DDD] px-2 pt-1.5 pb-1">
+          <p className="font-mono text-[10px] text-slate-500 uppercase text-center">Subject ID</p>
+        </div>
+        <p className="px-2 py-2 font-bold text-black text-center" style={{ fontFamily: 'Permanent Marker, cursive' }}>
+          #{data.id.substring(0, 6)}
+        </p>
+      </div>
+
+      {/* Subject details section */}
+      <div className="p-4">
+        <div className="mb-3">
+          <h3 className="font-bold text-white text-xl flex items-center mb-1">
             {data.moniker}
             {isOwn && <span className="ml-2 text-xs bg-amber-500/50 px-2 py-0.5 rounded-full">You</span>}
             {!isOwn && isRecent && <span className="ml-2 text-xs bg-green-500/50 px-2 py-0.5 rounded-full">New</span>}
@@ -143,61 +160,57 @@ export default function FingerprintBlock({ data, index, isOwn = false }: Fingerp
             <span className="ml-2 text-[10px] text-white/50">({ageInSeconds}s ago)</span>
           </p>
         </div>
-      </div>
 
-      {/* Always show basic info */}
-      <div className="grid grid-cols-2 gap-2 mt-2 text-white/90 text-sm">
-        <div className="flex items-center gap-1">
-          <Globe className="w-4 h-4" />
-          <span>{data.details.browser}</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <Monitor className="w-4 h-4" />
-          <span>{data.details.os}</span>
-        </div>
-      </div>
-
-      {/* Always expanded detailed info */}
-      <div className="mt-3 text-xs bg-black/30 p-3 rounded border border-white/10">
-        <div className="grid gap-2">
-          <div className="flex items-center gap-2">
-            <Monitor className="w-4 h-4 text-white/70" />
-            <div>
-              <p className="font-semibold text-white/90">Display</p>
-              <p className="text-white/70">
-                {data.details.screenSize} ({data.details.colorDepth})
-              </p>
-            </div>
+        {/* Basic info */}
+        <div className="grid grid-cols-2 gap-2 text-white/90 text-sm mb-3">
+          <div className="flex items-center gap-1">
+            <Globe className="w-4 h-4" />
+            <span>{data.details.browser}</span>
           </div>
+          <div className="flex items-center gap-1">
+            <Monitor className="w-4 h-4" />
+            <span>{data.details.os}</span>
+          </div>
+        </div>
 
-          {isGpu && (
+        {/* Detailed info */}
+        <div className="text-xs bg-black/30 p-3 rounded border border-white/10">
+          <div className="grid gap-2">
             <div className="flex items-center gap-2">
-              <Cpu className="w-4 h-4 text-white/70" />
+              <Monitor className="w-4 h-4 text-white/70" />
               <div>
-                <p className="font-semibold text-white/90">Graphics</p>
-                <p className="text-white/70 break-words">{data.details.webglRenderer}</p>
+                <p className="font-semibold text-white/90">Display</p>
+                <p className="text-white/70">
+                  {data.details.screenSize} ({data.details.colorDepth})
+                </p>
               </div>
             </div>
-          )}
 
-          <div className="flex items-center gap-2">
-            <PaintBucket className="w-4 h-4 text-white/70" />
-            <div>
-              <p className="font-semibold text-white/90">Canvas Fingerprint</p>
-              <p className="text-white/70">{data.details.canvasHash.substring(0, 16)}...</p>
+            {isGpu && (
+              <div className="flex items-center gap-2">
+                <Cpu className="w-4 h-4 text-white/70" />
+                <div>
+                  <p className="font-semibold text-white/90">Graphics</p>
+                  <p className="text-white/70 break-words">{data.details.webglRenderer}</p>
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center gap-2">
+              <PaintBucket className="w-4 h-4 text-white/70" />
+              <div>
+                <p className="font-semibold text-white/90">Canvas Fingerprint</p>
+                <p className="text-white/70">{data.details.canvasHash.substring(0, 16)}...</p>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-2">
-            <Volume2 className="w-4 h-4 text-white/70" />
-            <div>
-              <p className="font-semibold text-white/90">Audio Fingerprint</p>
-              <p className="text-white/70">{data.details.audioHash.substring(0, 16)}...</p>
+            <div className="flex items-center gap-2">
+              <Volume2 className="w-4 h-4 text-white/70" />
+              <div>
+                <p className="font-semibold text-white/90">Audio Fingerprint</p>
+                <p className="text-white/70">{data.details.audioHash.substring(0, 16)}...</p>
+              </div>
             </div>
-          </div>
-
-          <div className="mt-2 pt-2 border-t border-white/20">
-            <p className="text-white/50 text-[10px]">Fingerprint ID: {data.id.substring(0, 16)}...</p>
           </div>
         </div>
       </div>

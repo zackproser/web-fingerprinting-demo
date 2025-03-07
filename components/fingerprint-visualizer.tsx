@@ -30,7 +30,7 @@ export default function FingerprintVisualizer() {
       }
 
       const data = await response.json()
-      console.log(`Fetched ${data.fingerprints?.length || 0} fingerprints from ${data.storageType}`)
+      // console.log(`Fetched ${data.fingerprints?.length || 0} fingerprints from ${data.storageType}`)
       setStorageType(data.storageType || "unknown")
 
       // Always ensure our own fingerprint is in the list
@@ -39,7 +39,7 @@ export default function FingerprintVisualizer() {
 
       if (ownFingerprintIndex === -1) {
         // Our fingerprint is not in the list, add it
-        console.log("Adding own fingerprint to list")
+        // console.log("Adding own fingerprint to list")
         updatedData.push({
           ...fingerprint,
           timestamp: Date.now(), // Ensure timestamp is current
@@ -83,7 +83,7 @@ export default function FingerprintVisualizer() {
     async function registerFingerprint() {
       setIsRegistering(true)
       try {
-        console.log("Registering fingerprint:", fingerprint.moniker)
+        // console.log("Registering fingerprint:", fingerprint.moniker)
 
         const response = await fetch("/api/fingerprints", {
           method: "POST",
@@ -102,7 +102,7 @@ export default function FingerprintVisualizer() {
         }
 
         const data = await response.json()
-        console.log(`Registered fingerprint: ${fingerprint.moniker}. Total: ${data.count} (${data.storageType})`)
+        // console.log(`Registered fingerprint: ${fingerprint.moniker}. Total: ${data.count} (${data.storageType})`)
         setStorageType(data.storageType || "unknown")
       } catch (error) {
         console.error("Error registering fingerprint:", error)
@@ -119,7 +119,7 @@ export default function FingerprintVisualizer() {
     const interval = setInterval(registerFingerprint, 120000)
 
     return () => clearInterval(interval)
-  }, [fingerprint, loading, isRegistering])
+  }, [fingerprint, loading])
 
   // Fetch all fingerprints periodically
   useEffect(() => {
@@ -169,7 +169,21 @@ export default function FingerprintVisualizer() {
         </h2>
         {fingerprint && (
           <div className="flex flex-col md:flex-row items-start gap-4">
-            <div className="text-5xl">{fingerprint.emoji}</div>
+            <div className="flex flex-col items-center">
+              <div className="bg-[#1A1A1A] p-4 rounded-lg shadow-inner border border-[#333333]">
+                <div className="text-6xl filter grayscale bg-gradient-to-b from-slate-800 to-slate-900 p-4 rounded border border-[#444444]" style={{ fontFamily: 'serif' }}>
+                  {fingerprint.emoji}
+                </div>
+                <div className="mt-2 bg-white rounded border border-[#666666] shadow-inner">
+                  <div className="border-b border-[#DDD] px-2 pt-1 pb-0.5">
+                    <p className="font-mono text-[10px] text-slate-400 uppercase">Subject ID</p>
+                  </div>
+                  <p className="px-2 py-1.5 font-bold text-black" style={{ fontFamily: 'Permanent Marker, cursive' }}>
+                    #{fingerprint.id.substring(0, 8)}
+                  </p>
+                </div>
+              </div>
+            </div>
             <div className="flex-1 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
               <p className="text-2xl font-semibold">{fingerprint.moniker}</p>
               <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">

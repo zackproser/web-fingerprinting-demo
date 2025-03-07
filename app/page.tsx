@@ -150,6 +150,16 @@ export default function Home() {
               This investigation collects browser information like canvas rendering, WebGL capabilities, audio
               processing, and more to create a unique identifier for each browser.
             </p>
+            <p className="mt-2 text-sm">
+              <a 
+                href="https://workos.com/blog/what-is-device-fingerprinting-and-how-does-it-work"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#2C1810] underline hover:text-[#4A3828] transition-colors"
+              >
+                Read our deep dive on how browser fingerprinting works →
+              </a>
+            </p>
           </div>
         </div>
       </header>
